@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Example Babashka Lambda using HTMX 
+
+Parameters:
+  Timeout:
+    Type: Number
+    Default: 40
+  MemorySize:
+    Type: Number
+    Default: 512
+  Entrypoint:
+    Type: String
+    Default: example.core
+  LambdaName:
+    Type: String
+    Default: LambdaGenerateTemplate
+
+Globals:
+  Function:
+    Timeout: !Ref Timeout
+    MemorySize: !Ref MemorySize
+    Environment:
+      Variables:
+        HL_ENTRYPOINT: !Ref Entrypoint
+        SES_ACCESS_KEY_ID: !Ref SESAccessKey
+        SES_SECRET_ACCESS_KEY: !Ref SESSecretAccessKey
+
+Resources:
+  BabashkaDepsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: BabashkaDepsLayer
+      ContentUri: ./.holy-lambda/bb-clj-deps
+
+  LambdaGenerateTemplate:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref LambdaName
+      FunctionUrlConfig:
+        AuthType: NONE 
+        Cors: 
+          AllowHeaders: 
+            - hx-current-url
+            - hx-request
+          AllowMethods: 
+            - POST
+          AllowOrigins: 
+            - "*" # - https://my.website.com
+          ExposeHeaders:
+            - access-control-allow-origin
+            - access-control-allow-methods
+            - access-control-allow-headers
+
+      Runtime: provided
+      Handler: example.core.LambdaGenerateTemplate
+      CodeUri: src
+      Layers:
+        - arn:aws:lambda:us-east-2:268528881561:layer:holy-lambda-babashka-runtime-amd64:1
+        - !Ref BabashkaDepsLayer 

@@ -1,0 +1,13 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "example-babashka-htmx-app"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-222y2tl4vex6"
+s3_prefix = "example-babashka-htmx-app"
+region = "us-east-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "Timeout=\"5\" MemorySize=\"512\" Entrypoint=\"example.core\""
+image_repositories = []
